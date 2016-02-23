@@ -113,7 +113,6 @@ void ofApp::draw(){
     ofSetColor(255);
     ofDrawBitmapString("FPS: " + ofToString( ofGetFrameRate()), ofGetWidth()-100, 15);
     
-    if(ofGetEllapsedTimef()
     
 }
 

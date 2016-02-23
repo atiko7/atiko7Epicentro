@@ -2,8 +2,8 @@
 
 //------------------------------------------------------------------
 Particle::Particle(){
-    pColor = ofColor(255, 255, 255);
-    bColor = ofColor(0);
+    pColor = ofColor(200, 100, 0);
+    bColor = ofColor(200, 100, 0);
     lifespan = 0;
     partSize = ofRandom(partSizeRef, partSizeRef+10);
     gravity.set(0, -0.3);
@@ -12,7 +12,8 @@ Particle::Particle(){
 
 //------------------------------------------------------------------
 Particle::Particle(float ld){
-    pColor = ofColor(255, 255, 255);
+    pColor = ofColor(200, 100, 0);
+    bColor = ofColor(200, 100, 0);
     lifespan = 0;
     lifedec = ld;
     partSize = ofRandom(partSizeRef, partSizeRef+10);
@@ -64,14 +65,15 @@ void Particle::draw(){
         ofPushMatrix();
         ofTranslate(pos.x, pos.y);
         ofNoFill();
+        ofRotate(lifespan);
         for (int j=1; j<4; j++) {
             ofSetColor(pColor, lifespan*j*0.1);
-            ofDrawCircle(0, 0, partSize*(0.45-j*0.09));
+            ofRect(0, 0, partSize*(0.95-j*0.09), partSize*(0.095-j*0.09));
         }
         ofSetLineWidth(0);
         ofFill();
         ofSetColor(ofColor(bColor, lifespan));
-        ofDrawCircle(0, 0, partSize*0.15*lifespan*0.01);
+        ofRect(0, 0, partSize*0.25*lifespan*0.01, partSize*0.025);
         ofPopMatrix();
     }
 }
