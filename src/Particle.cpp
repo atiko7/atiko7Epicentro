@@ -3,12 +3,11 @@
 //------------------------------------------------------------------
 Particle::Particle(){
     pColor = ofColor(255, 255, 255);
-    bColor = ofColor(255, 255, 255);
+    bColor = ofColor(0);
     lifespan = 0;
-    gravity.x = 0;
-    gravity.y = -0.3;
-    pos.x = 0;
-    pos.y = 0;
+    partSize = ofRandom(partSizeRef, partSizeRef+10);
+    gravity.set(0, -0.3);
+    pos.set(0, 0);
 }
 
 //------------------------------------------------------------------
@@ -16,21 +15,17 @@ Particle::Particle(float ld){
     pColor = ofColor(255, 255, 255);
     lifespan = 0;
     lifedec = ld;
-    gravity.x = 0;
-    gravity.y = -0.3;
-    pos.x = 0;
-    pos.y = 0;
+    partSize = ofRandom(partSizeRef, partSizeRef+10);
+    gravity.set(0, -0.3);
+    pos.set(0, 0);
 }
 
 //------------------------------------------------------------------
 void Particle::rebirth(float x, float y){
-    pos.x = x;
-    pos.y = y;
-    partSize = ofRandom(partSizeRef, partSizeRef+10);
+    pos.set(x, y);
     float a = ofRandom(TWO_PI);
     float speed = ofRandom(-0.3, 0.3);
-    vel.x = cos(a);
-    vel.y = sin(a);
+    vel.set(cos(a), sin(a));
     vel *= speed;
     lifespan = ofRandom(100, 255);
 }
@@ -41,6 +36,16 @@ void Particle::updateLifedec(float ld){
 }
 
 //------------------------------------------------------------------
+void Particle::updateGravity(ofVec2f g){
+    gravity.set(g.x, g.y);
+}
+
+//------------------------------------------------------------------
+void Particle::updateVelocity(ofVec2f v){
+    vel.set(v.x, v.y);
+}
+
+//------------------------------------------------------------------
 void Particle::updatePartSizeref(float ps){
     partSizeRef = ps;
 }
@@ -48,17 +53,16 @@ void Particle::updatePartSizeref(float ps){
 //------------------------------------------------------------------
 void Particle::update(){
     lifespan = lifespan - lifedec;
-    vel.x += gravity.x;
-    vel.y += gravity.y;
-    pos.x += vel.x;
-    pos.y += vel.y;
-    
+    vel += gravity;
+    pos += vel;
 }
+
+
 //------------------------------------------------------------------
 void Particle::draw(){
     if(!(pColor == ofColor(0) && bColor == ofColor(0))){
         ofPushMatrix();
-        ofTranslate(pos.x, pos.y, 0);
+        ofTranslate(pos.x, pos.y);
         ofNoFill();
         for (int j=1; j<4; j++) {
             ofSetColor(pColor, lifespan*j*0.1);
@@ -73,7 +77,7 @@ void Particle::draw(){
 }
 
 //------------------------------------------------------------------
-Boolean Particle::isDead() {
+bool Particle::isDead() {
     if (lifespan < 0) {
         return true;
     } else {
