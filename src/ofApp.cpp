@@ -1,13 +1,15 @@
 #include "ofApp.h"
 int maxPS = 1;
-int maxPSS = 8000;
+int maxPSS = 10000;
 int estado = 2;
 
-bool useKinect = true;
+bool useKinect = false;
 
 
 //--------------------------------------------------------------
 void ofApp::setup(){
+    //------------- OSC
+    receiver.setup(PORT);
     
     ofSetLogLevel(OF_LOG_VERBOSE);
     ofSetVerticalSync(true);
@@ -46,6 +48,8 @@ void ofApp::setup(){
     myImage.allocate(640, 480, OF_IMAGE_GRAYSCALE);
     myImage2.allocate(640, 480, OF_IMAGE_COLOR);
     
+    
+    //------------- Kinect
     if (useKinect){
         niContext.setup();
         niDepthGenerator.setup( &niContext );
@@ -60,6 +64,15 @@ void ofApp::setup(){
 
 //--------------------------------------------------------------
 void ofApp::update(){
+    //------------- OSC
+    while(receiver.hasWaitingMessages()){
+        ofxOscMessage m;
+        receiver.getNextMessage(&m);
+        ofLog(OF_LOG_NOTICE, m.getAddress());
+    }
+
+    
+    //------------- Kinect
     if (useKinect){
         niContext.update();
         niDepthGenerator.update();
