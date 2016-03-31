@@ -30,6 +30,7 @@ public:
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
     void generateParticlesLogo(ofPixels * _pix);
+    void genEstado(int est);
 
     
     ofxOscReceiver receiver;

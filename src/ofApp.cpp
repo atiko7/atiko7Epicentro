@@ -2,7 +2,8 @@
 int maxPS = 1;
 int maxPSS = 10000;
 int estado = 2;
-
+int timeMsg = 0;
+int lastTimeMsg = 0;
 bool useKinect = false;
 
 
@@ -67,10 +68,19 @@ void ofApp::update(){
     //------------- OSC
     while(receiver.hasWaitingMessages()){
         ofxOscMessage m;
-        receiver.getNextMessage(&m);
-        ofLog(OF_LOG_NOTICE, m.getAddress());
-    }
+        receiver.getNextMessage(m);
+        timeMsg = ofGetElapsedTimeMillis();
+        ofLog(OF_LOG_NOTICE, ofToString(m.getNumArgs()));
+        if(estado != 0){
+            genEstado(0);
+            lastTimeMsg = ofGetElapsedTimeMillis();
+        }
+        if(timeMsg-lastTimeMsg > 1900 && timeMsg-lastTimeMsg < 2100){
+            genEstado(int(ofRandom(1, 4)));
+        }
 
+    }
+    
     
     //------------- Kinect
     if (useKinect){
@@ -87,7 +97,12 @@ void ofApp::update(){
             pss[i]->setEmitter(ofRandom(ofGetWidth()), ofRandom(ofGetHeight()));
         }
     }
-    else if(estado == 1){
+    else if(estado == 1 || estado == 2){
+        for(int i=0; i<pss.size(); i++){
+            pss[i]->setEmitter(pss[i]->pos.x, pss[i]->pos.y);
+        }
+    }
+    else if(estado == 3){
         if(useKinect)contourFinder.findContours(myImage);
         else contourFinder.findContours(img);
         if(contourFinder.getContours().size()>0){
@@ -97,17 +112,10 @@ void ofApp::update(){
                 pss[i]->setEmitter(points[ind].x, points[ind].y);
             }
         }
-            }
-    else if(estado == 2 || estado == 3){
-        for(int i=0; i<pss.size(); i++){
-            pss[i]->setEmitter(pss[i]->pos.x, pss[i]->pos.y);
-        }
     }
     for(int i=0; i<pss.size(); i++){
         pss[i]->update();
     }
-
-   
 }
 
 //--------------------------------------------------------------
@@ -128,39 +136,53 @@ void ofApp::draw(){
     
     
 }
-
 //--------------------------------------------------------------
+void ofApp::genEstado(int est){
+    if(est==0){
+        estado = 0;
+        for(int i=0; i<pss.size(); i++){
+            pss[i]->updateLifedec(1);
+            pss[i]->updateGravity(ofVec2f(0, -0.2));
+            pss[i]->setEmitter(ofRandom(ofGetWidth()), ofRandom(ofGetHeight()));
+        }
+    }
+    else if(est==1){
+        estado = 1;
+        generateParticlesLogo(&pix);
+    }
+    else if(est==2){
+        estado = 2;
+        generateParticlesLogo(&pix2);
+    }
+    else if(est==3){
+        estado = 3;
+        for(int i=0; i<pss.size(); i++){
+            pss[i]->updateLifedec(20);
+            pss[i]->updateGravity(ofVec2f(0, -0.4));
+            pss[i]->setEmitter(ofRandom(ofGetWidth()), ofRandom(ofGetHeight()));
+        }
+        for(int i=0; i<pss.size(); i+=20){
+            pss[i]->updateGravity(ofVec2f(0, -0.3));
+            pss[i]->updateLifedec(5);
+        }
+    }
+}
+
 void ofApp::keyPressed(int key){
     switch (key) {
         case 'f':
             ofToggleFullscreen();
         case '0':
-            estado = 0;
-            for(int i=0; i<pss.size(); i++){
-                pss[i]->updateLifedec(1);
-                pss[i]->updateGravity(ofVec2f(0, -0.2));
-                pss[i]->setEmitter(ofRandom(ofGetWidth()), ofRandom(ofGetHeight()));
-            }
+            genEstado(0);
             break;
         case '1':
-            estado = 1;
-            for(int i=0; i<pss.size(); i++){
-                pss[i]->updateLifedec(20);
-                pss[i]->updateGravity(ofVec2f(0, -0.4));
-                pss[i]->setEmitter(ofRandom(ofGetWidth()), ofRandom(ofGetHeight()));
-            }
-            for(int i=0; i<pss.size(); i+=20){
-                pss[i]->updateGravity(ofVec2f(0, -0.3));
-                pss[i]->updateLifedec(5);
-            }
+            genEstado(1);
             break;
         case '2':
-            estado = 2;
-            generateParticlesLogo(&pix);
+            genEstado(2);
             break;
         case '3':
-            estado = 3;
-            generateParticlesLogo(&pix2);
+            genEstado(3);
             break;
     }
 }
