@@ -68,7 +68,7 @@ void Particle::draw(){
         ofRotate(lifespan);
         for (int j=1; j<4; j++) {
             ofSetColor(pColor, lifespan*j*0.1);
-            ofRect(0, 0, partSize*(0.95-j*0.09), partSize*(0.095-j*0.09));
+            ofRect(0, 0, partSize*(0.55-j*0.05), partSize*(0.055-j*0.05));
         }
         ofSetLineWidth(0);
         ofFill();

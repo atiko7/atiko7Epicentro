@@ -73,7 +73,7 @@ void ofApp::update(){
         niDepthGenerator.update();
         niImageGenerator.update();
         niUserGenerator.update();
-        userpixels.setFromExternalPixels(niUserGenerator.getUserPixels(0), 640, 480, 1);
+        userpixels.setFromExternalPixels(niUserGenerator.getUserPixels(), 640, 480, 1);
         myImage.setFromPixels(userpixels);
         myImage.update();
         
@@ -116,7 +116,7 @@ void ofApp::update(){
         }
         if(contourFinder.getContours().size()==0){
             genEstado(1);
-            lastTimeChange = 0;            
+            lastTimeChange = 0;
         }
     }
     for(int i=0; i<pss.size(); i++){
@@ -127,13 +127,13 @@ void ofApp::update(){
 //--------------------------------------------------------------
 void ofApp::checkTimes(){
     if(estado!=3){
-        if(estado != 0 && ofGetElapsedTimeMillis() - lastTimeChange > 10000){
+        if(estado != 0 && ofGetElapsedTimeMillis() - lastTimeChange > 8000){
             lastTimeChange = ofGetElapsedTimeMillis();
             lastTimeChangeToZero = ofGetElapsedTimeMillis();
             lastEstado = estado;
             genEstado(0);
         }
-        else if(estado == 0 && ofGetElapsedTimeMillis() - lastTimeChangeToZero > 3000){
+        else if(estado == 0 && ofGetElapsedTimeMillis() - lastTimeChangeToZero > 2500){
             if(lastEstado == 1 )genEstado(2);
             else if(lastEstado ==  2 )genEstado(1);
             lastTimeChange = ofGetElapsedTimeMillis();
