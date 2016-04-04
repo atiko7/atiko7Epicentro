@@ -84,12 +84,12 @@ void ofApp::update(){
             lastNumUsers == currentNumUsers;
             genEstado(3);
         }
-        if(currentNumUsers == 0 && estado == 3){
-            ofLog(OF_LOG_NOTICE, "GENERANDO ESTADO 0");
-            lastNumUsers = 0;
-            genEstado(0);
-            genEstado(1);
-        }
+//        if(currentNumUsers == 0 && estado == 3){
+//            ofLog(OF_LOG_NOTICE, "GENERANDO ESTADO 0");
+//            lastNumUsers = 0;
+//            genEstado(0);
+//            genEstado(1);
+//        }
     }
     
     checkTimes();
