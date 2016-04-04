@@ -1,19 +1,27 @@
 <tracks>
     <page>
         <name>Page One</name>
+        <track>
+            <type>Bangs</type>
+            <xmlFileName>bangs_.xml</xmlFileName>
+            <trackName>bangs</trackName>
+            <displayName>controlKinect</displayName>
+            <sendOSC>1</sendOSC>
+            <receiveOSC>0</receiveOSC>
+        </track>
     </page>
 </tracks>
 <timelineSettings>
-    <duration>00:00:30:000</duration>
-    <playhead>00:00:01:150</playhead>
-    <inpoint>00:00:01:257</inpoint>
-    <outpoint>00:00:30:000</outpoint>
-    <loop>0</loop>
+    <duration>00:00:15:000</duration>
+    <playhead>00:00:13:585</playhead>
+    <inpoint>00:00:00:000</inpoint>
+    <outpoint>00:00:15:000</outpoint>
+    <loop>1</loop>
 </timelineSettings>
 <projectSettings>
     <useBPM>0</useBPM>
     <bpm>60.000000000</bpm>
-    <snapToBPM>0</snapToBPM>
+    <snapToBPM>1</snapToBPM>
     <snapToKeys>1</snapToKeys>
     <oscInEnabled>0</oscInEnabled>
     <oscOutEnabled>1</oscOutEnabled>

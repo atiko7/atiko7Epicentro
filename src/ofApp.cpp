@@ -2,10 +2,12 @@
 int maxPS = 1;
 int maxPSS = 10000;
 int estado = 2;
-int timeMsg = 0;
-int lastTimeMsg = 0;
-bool useKinect = false;
-
+int lastEstado = 2;
+int timeChangeToZero = 0;
+int lastTimeChangeToZero = 0;
+int lastTimeChange = 0;
+bool useKinect = true;
+int lastNumUsers = 0;
 
 //--------------------------------------------------------------
 void ofApp::setup(){
@@ -65,23 +67,6 @@ void ofApp::setup(){
 
 //--------------------------------------------------------------
 void ofApp::update(){
-    //------------- OSC
-    while(receiver.hasWaitingMessages()){
-        ofxOscMessage m;
-        receiver.getNextMessage(m);
-        timeMsg = ofGetElapsedTimeMillis();
-        ofLog(OF_LOG_NOTICE, ofToString(m.getNumArgs()));
-        if(estado != 0){
-            genEstado(0);
-            lastTimeMsg = ofGetElapsedTimeMillis();
-        }
-        if(timeMsg-lastTimeMsg > 1900 && timeMsg-lastTimeMsg < 2100){
-            genEstado(int(ofRandom(1, 4)));
-        }
-
-    }
-    
-    
     //------------- Kinect
     if (useKinect){
         niContext.update();
@@ -91,7 +76,24 @@ void ofApp::update(){
         userpixels.setFromExternalPixels(niUserGenerator.getUserPixels(0), 640, 480, 1);
         myImage.setFromPixels(userpixels);
         myImage.update();
+        
+        int currentNumUsers = niUserGenerator.getNumberOfTrackedUsers();
+        //ofLog(OF_LOG_NOTICE, ofToString(currentNumUsers));
+
+        if(lastNumUsers==0 && currentNumUsers!=0 && estado !=3){
+            lastNumUsers == currentNumUsers;
+            genEstado(3);
+        }
+        if(currentNumUsers == 0 && estado == 3){
+            ofLog(OF_LOG_NOTICE, "GENERANDO ESTADO 0");
+            lastNumUsers = 0;
+            genEstado(0);
+            genEstado(1);
+        }
     }
+    
+    checkTimes();
+    
     if(estado == 0){
         for(int i=0; i<pss.size(); i++){
             pss[i]->setEmitter(ofRandom(ofGetWidth()), ofRandom(ofGetHeight()));
@@ -112,11 +114,33 @@ void ofApp::update(){
                 pss[i]->setEmitter(points[ind].x, points[ind].y);
             }
         }
+        if(contourFinder.getContours().size()==0){
+           genEstado(0);
+            genEstado(1);
+        }
     }
     for(int i=0; i<pss.size(); i++){
         pss[i]->update();
     }
 }
+
+//--------------------------------------------------------------
+void ofApp::checkTimes(){
+    if(estado!=3){
+        if(estado != 0 && ofGetElapsedTimeMillis() - lastTimeChange > 10000){
+            lastTimeChange = ofGetElapsedTimeMillis();
+            lastTimeChangeToZero = ofGetElapsedTimeMillis();
+            lastEstado = estado;
+            genEstado(0);
+        }
+        else if(estado == 0 && ofGetElapsedTimeMillis() - lastTimeChangeToZero > 3000){
+            if(lastEstado == 1 )genEstado(2);
+            else if(lastEstado ==  2 )genEstado(1);
+            lastTimeChange = ofGetElapsedTimeMillis();
+        }
+    }
+}
+    
 
 //--------------------------------------------------------------
 void ofApp::draw(){
@@ -138,34 +162,36 @@ void ofApp::draw(){
 }
 //--------------------------------------------------------------
 void ofApp::genEstado(int est){
-    if(est==0){
-        estado = 0;
-        for(int i=0; i<pss.size(); i++){
-            pss[i]->updateLifedec(1);
-            pss[i]->updateGravity(ofVec2f(0, -0.2));
-            pss[i]->setEmitter(ofRandom(ofGetWidth()), ofRandom(ofGetHeight()));
+   
+        if(est==0){
+            estado = 0;
+            for(int i=0; i<pss.size(); i++){
+                pss[i]->updateLifedec(1);
+                pss[i]->updateGravity(ofVec2f(0, -0.2));
+                pss[i]->setEmitter(ofRandom(ofGetWidth()), ofRandom(ofGetHeight()));
+            }
         }
-    }
-    else if(est==1){
-        estado = 1;
-        generateParticlesLogo(&pix);
-    }
-    else if(est==2){
-        estado = 2;
-        generateParticlesLogo(&pix2);
-    }
-    else if(est==3){
-        estado = 3;
-        for(int i=0; i<pss.size(); i++){
-            pss[i]->updateLifedec(20);
-            pss[i]->updateGravity(ofVec2f(0, -0.4));
-            pss[i]->setEmitter(ofRandom(ofGetWidth()), ofRandom(ofGetHeight()));
+        else if(est==1){
+            estado = 1;
+            generateParticlesLogo(&pix);
         }
-        for(int i=0; i<pss.size(); i+=20){
-            pss[i]->updateGravity(ofVec2f(0, -0.3));
-            pss[i]->updateLifedec(5);
+        else if(est==2){
+            estado = 2;
+            generateParticlesLogo(&pix2);
         }
-    }
+        else if(est==3){
+            estado = 3;
+            for(int i=0; i<pss.size(); i++){
+                pss[i]->updateLifedec(20);
+                pss[i]->updateGravity(ofVec2f(0, -0.4));
+                pss[i]->setEmitter(ofRandom(ofGetWidth()), ofRandom(ofGetHeight()));
+            }
+            for(int i=0; i<pss.size(); i+=20){
+                pss[i]->updateGravity(ofVec2f(0, -0.3));
+                pss[i]->updateLifedec(5);
+            }
+        }
+        ofLog(OF_LOG_NOTICE, "ESTADO:" + ofToString(estado));
 }
 
 void ofApp::keyPressed(int key){

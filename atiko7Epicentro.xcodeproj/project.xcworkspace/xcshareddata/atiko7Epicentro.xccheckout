@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>3297EA42-DE5F-43AA-84F1-7F5D2F956BEC</string>
+	<key>IDESourceControlProjectName</key>
+	<string>atiko7Epicentro</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>37526DA425E5430474A14FBFA1BC4525160B5FC1</key>
+		<string>https://github.com/kylemcdonald/ofxCv.git</string>
+		<key>421E233F431671192E82E3E02140E6377A568AD4</key>
+		<string>https://github.com/wearenocomputer/ofxOpenNI_NC.git</string>
+		<key>56F3E7A450007F351B52FFD7828E65649F1FF9AE</key>
+		<string>https://github.com/atiko7/atiko7Epicentro.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>atiko7Epicentro.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>37526DA425E5430474A14FBFA1BC4525160B5FC1</key>
+		<string>../../../addons/ofxCv</string>
+		<key>421E233F431671192E82E3E02140E6377A568AD4</key>
+		<string>../../../addons/ofxOpenNI_NC</string>
+		<key>56F3E7A450007F351B52FFD7828E65649F1FF9AE</key>
+		<string>../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/atiko7/atiko7Epicentro.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>56F3E7A450007F351B52FFD7828E65649F1FF9AE</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>56F3E7A450007F351B52FFD7828E65649F1FF9AE</string>
+			<key>IDESourceControlWCCName</key>
+			<string>atiko7Epicentro</string>
+		</dict>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>37526DA425E5430474A14FBFA1BC4525160B5FC1</string>
+			<key>IDESourceControlWCCName</key>
+			<string>ofxCv</string>
+		</dict>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>421E233F431671192E82E3E02140E6377A568AD4</string>
+			<key>IDESourceControlWCCName</key>
+			<string>ofxOpenNI_NC</string>
+		</dict>
+	</array>
+</dict>
+</plist>

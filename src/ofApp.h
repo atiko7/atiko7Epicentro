@@ -31,6 +31,7 @@ public:
     void gotMessage(ofMessage msg);
     void generateParticlesLogo(ofPixels * _pix);
     void genEstado(int est);
+    void checkTimes();
 
     
     ofxOscReceiver receiver;
