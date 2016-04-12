@@ -18,14 +18,14 @@ void ofApp::setup(){
     ofSetVerticalSync(true);
     ofSetFrameRate(60);
     ofSetWindowTitle("Atiko7-Epicentro");
-    atikoPlayer.load("vid_atiko_f.mp4");
-    epicentroPlayer.load("vid_epicentro_f.mp4");
+    atikoPlayer.load("vid_atiko_f_2.mp4");
+    epicentroPlayer.load("vid_epicentro_f_2.mp4");
     atikoPlayer.play();
     epicentroPlayer.play();
     
     img.load("user.png");
-    logoAtiko.load("logo_atiko.png");
-    logoEpicentro.load("logo_epicentro.png");
+    logoAtiko.load("logo_atiko_min.png");
+    logoEpicentro.load("logo_epicentro_min.png");
     logoAtiko.setAnchorPercent(0.5, 0.5);
     logoEpicentro.setAnchorPercent(0.5, 0.5);
     
@@ -158,8 +158,8 @@ void ofApp::draw(){
     if(estado==3){
         ofPushStyle();
         ofPushMatrix();
-        ofTranslate(0.05*ofGetWindowWidth(), 0);
-        ofScale(ofGetWindowWidth()/(atikoPlayer.getWidth()*5), ofGetWindowHeight()/(atikoPlayer.getHeight()*4.5));
+        ofTranslate(0.05*ofGetWindowWidth(), -0.023*ofGetWindowHeight());
+        ofScale(ofGetWindowWidth()/(atikoPlayer.getWidth()*3.75), ofGetWindowHeight()/(atikoPlayer.getHeight()*3.75));
         atikoPlayer.draw(0, 0);
         ofPopMatrix();
         ofPushMatrix();
@@ -227,8 +227,8 @@ void ofApp::keyPressed(int key){
     switch (key) {
         case 'f':
             ofToggleFullscreen();
-            atikoPlayer.load("vid_atiko_f.mp4");
-            epicentroPlayer.load("vid_epicentro_f.mp4");
+            atikoPlayer.load("vid_atiko_f_2.mp4");
+            epicentroPlayer.load("vid_epicentro_f_2.mp4");
             atikoPlayer.play();
             epicentroPlayer.play();
             break;
