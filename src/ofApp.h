@@ -33,6 +33,8 @@ public:
     void genEstado(int est);
     void checkTimes();
 
+    ofVideoPlayer atikoPlayer;
+    ofVideoPlayer epicentroPlayer;
     
     ofxOscReceiver receiver;
     

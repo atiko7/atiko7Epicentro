@@ -1,12 +1,12 @@
 #include "ofApp.h"
 int maxPS = 1;
-int maxPSS = 10000;
+int maxPSS = 15000;
 int estado = 2;
 int lastEstado = 2;
 int timeChangeToZero = 0;
 int lastTimeChangeToZero = 0;
 int lastTimeChange = 0;
-bool useKinect = true;
+bool useKinect = false;
 int lastNumUsers = 0;
 
 //--------------------------------------------------------------
@@ -18,6 +18,11 @@ void ofApp::setup(){
     ofSetVerticalSync(true);
     ofSetFrameRate(60);
     ofSetWindowTitle("Atiko7-Epicentro");
+    atikoPlayer.load("vid_atiko_f.mp4");
+    epicentroPlayer.load("vid_epicentro_f.mp4");
+    atikoPlayer.play();
+    epicentroPlayer.play();
+
     img.load("user.png");
     logoAtiko.load("logo_atiko.png");
     logoEpicentro.load("logo_epicentro.png");
@@ -78,20 +83,18 @@ void ofApp::update(){
         myImage.update();
         
         int currentNumUsers = niUserGenerator.getNumberOfTrackedUsers();
-        //ofLog(OF_LOG_NOTICE, ofToString(currentNumUsers));
-        
-        if(lastNumUsers==0 && currentNumUsers!=0 && estado !=3){
-            lastNumUsers == currentNumUsers;
-            genEstado(3);
+        ofLog(OF_LOG_NOTICE, ofToString(currentNumUsers));
+        if(currentNumUsers != 0){
+            contourFinder.findContours(myImage);
+            if(lastNumUsers == 0 && contourFinder.getContours().size()>0 && estado!=3){
+                lastNumUsers == currentNumUsers;
+                genEstado(3);
+            }
         }
-        if(currentNumUsers == 0 && estado == 3){
-            //            ofLog(OF_LOG_NOTICE, "GENERANDO ESTADO 0");
+        else{
             lastNumUsers = 0;
-            //            genEstado(0);
-            //            genEstado(1);
         }
     }
-    
     checkTimes();
     
     if(estado == 0){
@@ -108,20 +111,26 @@ void ofApp::update(){
         if(useKinect)contourFinder.findContours(myImage);
         else contourFinder.findContours(img);
         if(contourFinder.getContours().size()>0){
-            vector<cv::Point> points = contourFinder.getContour(0);
-            for(int i=0; i<pss.size(); i++){
-                int ind = i*points.size()/pss.size();
-                pss[i]->setEmitter(points[ind].x, points[ind].y);
+            for(int i=0; i<contourFinder.getContours().size();i++){
+            vector<cv::Point> points = contourFinder.getContour(i);
+                for(int j=0; j<pss.size(); j++){
+                    int ind = j*points.size()/pss.size();
+                    pss[j]->setEmitter(points[ind].x, points[ind].y);
+                }
             }
         }
         if(contourFinder.getContours().size()==0){
-            genEstado(1);
-            lastTimeChange = 0;            
+            genEstado(0);
+            lastTimeChange = 0;
+            lastTimeChangeToZero = ofGetElapsedTimeMillis();
+            lastEstado = 1;
         }
     }
     for(int i=0; i<pss.size(); i++){
         pss[i]->update();
     }
+    atikoPlayer.update();
+    epicentroPlayer.update();
 }
 
 //--------------------------------------------------------------
@@ -145,6 +154,21 @@ void ofApp::checkTimes(){
 //--------------------------------------------------------------
 void ofApp::draw(){
     ofBackground(0, 0, 0);
+    if(estado==3){
+        ofPushStyle();
+        ofPushMatrix();
+        ofTranslate(0.05*ofGetWindowWidth(), 0);
+        ofScale(ofGetWindowWidth()/(atikoPlayer.getWidth()*5), ofGetWindowHeight()/(atikoPlayer.getHeight()*4.5));
+        atikoPlayer.draw(0, 0);
+        ofPopMatrix();
+        ofPushMatrix();
+        ofTranslate(0.8*ofGetWindowWidth(), 0);
+        ofScale(ofGetWindowWidth()/(epicentroPlayer.getWidth()*5), ofGetWindowHeight()/(epicentroPlayer.getHeight()*5));
+        epicentroPlayer.draw(0, 0);
+        ofPopMatrix();
+        ofPopStyle();
+    }
+    ofPushStyle();
     ofPushMatrix();
     ofScale(ofGetWindowWidth()/640.0, ofGetWindowHeight()/480.0);
     ofEnableBlendMode(OF_BLENDMODE_ADD ) ;
@@ -154,9 +178,12 @@ void ofApp::draw(){
     }
     ofDisableBlendMode();
     ofPopMatrix();
-    ofSetColor(0, 255, 255);
-    ofSetColor(255);
-    ofDrawBitmapString("FPS: " + ofToString( ofGetFrameRate()), ofGetWidth()-100, 15);
+    ofPopStyle();
+    
+
+//    ofSetColor(0, 255, 255);
+//    ofSetColor(255);
+//    ofDrawBitmapString("FPS: " + ofToString( ofGetFrameRate()), ofGetWidth()-100, 15);
     
     
 }
