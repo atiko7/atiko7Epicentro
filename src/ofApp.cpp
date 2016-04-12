@@ -1,6 +1,6 @@
 #include "ofApp.h"
 int maxPS = 1;
-int maxPSS = 15000;
+int maxPSS = 20000;
 int estado = 2;
 int lastEstado = 2;
 int timeChangeToZero = 0;
@@ -22,7 +22,7 @@ void ofApp::setup(){
     epicentroPlayer.load("vid_epicentro_f.mp4");
     atikoPlayer.play();
     epicentroPlayer.play();
-
+    
     img.load("user.png");
     logoAtiko.load("logo_atiko.png");
     logoEpicentro.load("logo_epicentro.png");
@@ -99,7 +99,7 @@ void ofApp::update(){
     
     if(estado == 0){
         for(int i=0; i<pss.size(); i++){
-            pss[i]->setEmitter(ofRandom(ofGetWidth()), ofRandom(ofGetHeight()));
+            pss[i]->setEmitter(ofRandom(ofGetWindowWidth()), ofRandom(ofGetWindowHeight()));
         }
     }
     else if(estado == 1 || estado == 2){
@@ -112,7 +112,7 @@ void ofApp::update(){
         else contourFinder.findContours(img);
         if(contourFinder.getContours().size()>0){
             for(int i=0; i<contourFinder.getContours().size();i++){
-            vector<cv::Point> points = contourFinder.getContour(i);
+                vector<cv::Point> points = contourFinder.getContour(i);
                 for(int j=0; j<pss.size(); j++){
                     int ind = j*points.size()/pss.size();
                     pss[j]->setEmitter(points[ind].x, points[ind].y);
@@ -125,6 +125,7 @@ void ofApp::update(){
             lastTimeChangeToZero = ofGetElapsedTimeMillis();
             lastEstado = 1;
         }
+
     }
     for(int i=0; i<pss.size(); i++){
         pss[i]->update();
@@ -162,7 +163,7 @@ void ofApp::draw(){
         atikoPlayer.draw(0, 0);
         ofPopMatrix();
         ofPushMatrix();
-        ofTranslate(0.8*ofGetWindowWidth(), 0);
+        ofTranslate(0.75*ofGetWindowWidth(), 0);
         ofScale(ofGetWindowWidth()/(epicentroPlayer.getWidth()*5), ofGetWindowHeight()/(epicentroPlayer.getHeight()*5));
         epicentroPlayer.draw(0, 0);
         ofPopMatrix();
@@ -180,10 +181,11 @@ void ofApp::draw(){
     ofPopMatrix();
     ofPopStyle();
     
-
-//    ofSetColor(0, 255, 255);
-//    ofSetColor(255);
-//    ofDrawBitmapString("FPS: " + ofToString( ofGetFrameRate()), ofGetWidth()-100, 15);
+    
+    
+    //    ofSetColor(0, 255, 255);
+    //    ofSetColor(255);
+    //    ofDrawBitmapString("FPS: " + ofToString( ofGetFrameRate()), ofGetWidth()-100, 15);
     
     
 }
@@ -195,7 +197,7 @@ void ofApp::genEstado(int est){
         for(int i=0; i<pss.size(); i++){
             pss[i]->updateLifedec(1);
             pss[i]->updateGravity(ofVec2f(0, -0.2));
-            pss[i]->setEmitter(ofRandom(ofGetWidth()), ofRandom(ofGetHeight()));
+            pss[i]->setEmitter(ofRandom(ofGetWindowWidth()), ofRandom(ofGetWindowHeight()));
         }
     }
     else if(est==1){
@@ -211,7 +213,7 @@ void ofApp::genEstado(int est){
         for(int i=0; i<pss.size(); i++){
             pss[i]->updateLifedec(20);
             pss[i]->updateGravity(ofVec2f(0, -0.4));
-            pss[i]->setEmitter(ofRandom(ofGetWidth()), ofRandom(ofGetHeight()));
+            pss[i]->setEmitter(ofRandom(ofGetWindowWidth()), ofRandom(ofGetWindowHeight()));
         }
         for(int i=0; i<pss.size(); i+=20){
             pss[i]->updateGravity(ofVec2f(0, -0.3));
@@ -225,6 +227,11 @@ void ofApp::keyPressed(int key){
     switch (key) {
         case 'f':
             ofToggleFullscreen();
+            atikoPlayer.load("vid_atiko_f.mp4");
+            epicentroPlayer.load("vid_epicentro_f.mp4");
+            atikoPlayer.play();
+            epicentroPlayer.play();
+            break;
         case '0':
             genEstado(0);
             break;
@@ -243,8 +250,8 @@ void ofApp::keyPressed(int key){
 //--------------------------------------------------------------
 void ofApp::generateParticlesLogo(ofPixels * _pix){
     int ind = 0;
-    for(int x=0; x < _pix->getWidth(); x+=int(ofRandom(1, 2))){
-        for(int y=0; y < _pix->getHeight(); y+=int(ofRandom(1, 3))){
+    for(int x=0; x < _pix->getWidth(); x++/*int(ofRandom(1, 2))*/){
+        for(int y=0; y < _pix->getHeight(); y++/*int(ofRandom(1, 2))*/){
             if(_pix -> getColor(x, y) == ofColor(255) && ind < pss.size()){
                 pss[ind]->setEmitter(x, y);
                 pss[ind]->updateLifedec(7);
