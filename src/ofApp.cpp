@@ -1,4 +1,6 @@
 #include "ofApp.h"
+using namespace ofxCv;
+using namespace cv;
 int maxPS = 1;
 int maxPSS = 20000;
 int estado = 2;
@@ -12,8 +14,6 @@ int lastNumUsers = 0;
 //--------------------------------------------------------------
 void ofApp::setup(){
     //------------- OSC
-    receiver.setup(PORT);
-    
     ofSetLogLevel(OF_LOG_VERBOSE);
     ofSetVerticalSync(true);
     ofSetFrameRate(60);
@@ -56,6 +56,9 @@ void ofApp::setup(){
     myImage.allocate(640, 480, OF_IMAGE_GRAYSCALE);
     myImage2.allocate(640, 480, OF_IMAGE_COLOR);
     
+    imitate(previous, myImage);
+    imitate(diff,myImage);
+    
     
     //------------- Kinect
     if (useKinect){
@@ -78,12 +81,14 @@ void ofApp::update(){
         niDepthGenerator.update();
         niImageGenerator.update();
         niUserGenerator.update();
-        userpixels.setFromExternalPixels(niUserGenerator.getUserPixels(), 640, 480, 1);
+        userpixels.setFromExternalPixels(niUserGenerator.getUserPixels(0), 640, 480, 1);
         myImage.setFromPixels(userpixels);
         myImage.update();
         
+        calcMovement();
         int currentNumUsers = niUserGenerator.getNumberOfTrackedUsers();
-        ofLog(OF_LOG_NOTICE, ofToString(currentNumUsers));
+        ofLog(OF_LOG_NOTICE, "USERS: " + ofToString(currentNumUsers) + "   MOV: " + ofToString(diffMean));
+
         if(currentNumUsers != 0){
             contourFinder.findContours(myImage);
             if(lastNumUsers == 0 && contourFinder.getContours().size()>0 && estado!=3){
@@ -112,27 +117,20 @@ void ofApp::update(){
         else contourFinder.findContours(img);
         if(contourFinder.getContours().size()>0){
 //*****************************************************************************// CAMBIO
-           // for(int i=0; i<contourFinder.getContours().size();i++){
-                vector<cv::Point> points = contourFinder.getContour(0);
+            for(int i=0; i<contourFinder.getContours().size();i++){
+                vector<cv::Point> points = contourFinder.getContour(i); //cambiar a i
                 for(int j=0; j<pss.size(); j+=3){
                     int ind = j*points.size()/pss.size();
                     pss[j]->setEmitter(points[ind].x, points[ind].y);
                 }
-            //}
+            }
 //*****************************************************************************// CAMBIO
 
         }
-        if(contourFinder.getContours().size()==0){
-//*****************************************************************************// CAMBIO
+        if(contourFinder.getContours().size()==0 /*|| mov < 20*/){
             genEstado(1);
             lastTimeChange = 0;
-//            genEstado(0);
-//            lastTimeChange = 0;
-//            lastTimeChangeToZero = ofGetElapsedTimeMillis();
-//            lastEstado = 1;
-//*****/************************************************************************// CAMBIO
         }
-
     }
     for(int i=0; i<pss.size(); i++){
         pss[i]->update();
@@ -188,8 +186,7 @@ void ofApp::draw(){
     ofPopMatrix();
     ofPopStyle();
     
-    
-    
+    myImage.draw(320, 0, 320, 240);
     //    ofSetColor(0, 255, 255);
     //    ofSetColor(255);
     //    ofDrawBitmapString("FPS: " + ofToString( ofGetFrameRate()), ofGetWidth()-100, 15);
@@ -227,7 +224,7 @@ void ofApp::genEstado(int est){
             pss[i]->updateLifedec(5);
         }
     }
-    ofLog(OF_LOG_NOTICE, "ESTADO:" + ofToString(estado));
+    //ofLog(OF_LOG_NOTICE, "ESTADO:" + ofToString(estado));
 }
 
 void ofApp::keyPressed(int key){
@@ -268,6 +265,15 @@ void ofApp::generateParticlesLogo(ofPixels * _pix){
             }
         }
     }
+}
+
+void ofApp::calcMovement(){
+    absdiff(myImage, previous, diff);
+    diff.update();
+    copy(myImage, previous);
+    diffMean = mean(toCv(diff));
+    diffMean *= Scalar(50);
+    mov = diffMean[0];
 }
 //--------------------------------------------------------------
 void ofApp::keyReleased(int key){

@@ -7,9 +7,7 @@
 #include "ofxGui.h"
 #include "ofxOpenNI.h"
 #include "ofxCv.h"
-#include "ofxOsc.h"
 
-#define PORT 12345
 
 class ofApp : public ofBaseApp{
     
@@ -32,11 +30,16 @@ public:
     void generateParticlesLogo(ofPixels * _pix);
     void genEstado(int est);
     void checkTimes();
+    void calcMovement();
+
 
     ofVideoPlayer atikoPlayer;
     ofVideoPlayer epicentroPlayer;
     
-    ofxOscReceiver receiver;
+    ofPixels previous;
+    ofImage diff;
+    cv::Scalar diffMean;
+    int mov;
     
     ofxOpenNIContext                niContext;
     ofxDepthGenerator               niDepthGenerator;
