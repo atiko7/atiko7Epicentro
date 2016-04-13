@@ -196,7 +196,7 @@ void ofApp::draw(){
     ofPopMatrix();
     ofPopStyle();
     
-    myImage.draw(ofGetWindowWidth()-320, ofGetWindowHeight()-240, 320, 240);
+    //myImage.draw(ofGetWindowWidth()-320, ofGetWindowHeight()-240, 320, 240);
     //    ofSetColor(0, 255, 255);
     //    ofSetColor(255);
     //    ofDrawBitmapString("FPS: " + ofToString( ofGetFrameRate()), ofGetWidth()-100, 15);
