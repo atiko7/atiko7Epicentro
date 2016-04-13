@@ -6,7 +6,7 @@ int lastEstado = 2;
 int timeChangeToZero = 0;
 int lastTimeChangeToZero = 0;
 int lastTimeChange = 0;
-bool useKinect = false;
+bool useKinect = true;
 int lastNumUsers = 0;
 
 //--------------------------------------------------------------
@@ -24,8 +24,8 @@ void ofApp::setup(){
     epicentroPlayer.play();
     
     img.load("user.png");
-    logoAtiko.load("logo_atiko_min.png");
-    logoEpicentro.load("logo_epicentro_min.png");
+    logoAtiko.load("logo_atiko.png");
+    logoEpicentro.load("logo_epicentro.png");
     logoAtiko.setAnchorPercent(0.5, 0.5);
     logoEpicentro.setAnchorPercent(0.5, 0.5);
     
@@ -111,19 +111,26 @@ void ofApp::update(){
         if(useKinect)contourFinder.findContours(myImage);
         else contourFinder.findContours(img);
         if(contourFinder.getContours().size()>0){
-            for(int i=0; i<contourFinder.getContours().size();i++){
-                vector<cv::Point> points = contourFinder.getContour(i);
-                for(int j=0; j<pss.size(); j++){
+//*****************************************************************************// CAMBIO
+           // for(int i=0; i<contourFinder.getContours().size();i++){
+                vector<cv::Point> points = contourFinder.getContour(0);
+                for(int j=0; j<pss.size(); j+=3){
                     int ind = j*points.size()/pss.size();
                     pss[j]->setEmitter(points[ind].x, points[ind].y);
                 }
-            }
+            //}
+//*****************************************************************************// CAMBIO
+
         }
         if(contourFinder.getContours().size()==0){
-            genEstado(0);
+//*****************************************************************************// CAMBIO
+            genEstado(1);
             lastTimeChange = 0;
-            lastTimeChangeToZero = ofGetElapsedTimeMillis();
-            lastEstado = 1;
+//            genEstado(0);
+//            lastTimeChange = 0;
+//            lastTimeChangeToZero = ofGetElapsedTimeMillis();
+//            lastEstado = 1;
+//*****/************************************************************************// CAMBIO
         }
 
     }
@@ -137,13 +144,13 @@ void ofApp::update(){
 //--------------------------------------------------------------
 void ofApp::checkTimes(){
     if(estado!=3){
-        if(estado != 0 && ofGetElapsedTimeMillis() - lastTimeChange > 8000){
+        if(estado != 0 && ofGetElapsedTimeMillis() - lastTimeChange > 5000){
             lastTimeChange = ofGetElapsedTimeMillis();
             lastTimeChangeToZero = ofGetElapsedTimeMillis();
             lastEstado = estado;
             genEstado(0);
         }
-        else if(estado == 0 && ofGetElapsedTimeMillis() - lastTimeChangeToZero > 2500){
+        else if(estado == 0 && ofGetElapsedTimeMillis() - lastTimeChangeToZero > 1500){
             if(lastEstado == 1 )genEstado(2);
             else if(lastEstado ==  2 )genEstado(1);
             lastTimeChange = ofGetElapsedTimeMillis();
