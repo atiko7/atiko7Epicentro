@@ -9,7 +9,7 @@ int timeChangeToZero = 0;
 int lastTimeChangeToZero = 0;
 int lastTimeMovHigh = 0;
 int lastTimeChange = 0;
-bool useKinect = false;
+bool useKinect = true;
 int lastNumUsers = 0;
 
 //--------------------------------------------------------------
