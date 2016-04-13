@@ -104,7 +104,7 @@ void ofApp::update(){
     }
     checkTimes();
     calcMovement();
-    if(mov > 15){
+    if(mov > 5){
         ofLog(OF_LOG_NOTICE, "MOV: " + ofToString(mov));
         lastTimeMovHigh = ofGetElapsedTimeMillis();
     }
