@@ -86,14 +86,16 @@ void ofApp::update(){
         myImage.setFromPixels(userpixels);
         myImage.update();
         
-       
+        
         int currentNumUsers = niUserGenerator.getNumberOfTrackedUsers();
-
+        
         if(currentNumUsers != 0){
             contourFinder.findContours(myImage);
             if(lastNumUsers == 0 && contourFinder.getContours().size()>0 && estado!=3){
                 lastNumUsers == currentNumUsers;
-                genEstado(3);
+                if(ofGetElapsedTimeMillis()-lastTimeMovHigh<1000){
+                    genEstado(3);
+                }
             }
         }
         else{
@@ -102,8 +104,8 @@ void ofApp::update(){
     }
     checkTimes();
     calcMovement();
-    ofLog(OF_LOG_NOTICE, "MOV: " + ofToString(mov));
-    if(mov > 20){
+    if(mov > 15){
+        ofLog(OF_LOG_NOTICE, "MOV: " + ofToString(mov));
         lastTimeMovHigh = ofGetElapsedTimeMillis();
     }
     
@@ -123,17 +125,17 @@ void ofApp::update(){
         int numContours = contourFinder.getContours().size();
         if(numContours > 0){
             int numPartPerContour = pss.size()/numContours;
-//*****************************************************************************// CAMBIO
+            //*****************************************************************************// CAMBIO
             for(int i = 0; i < numContours; i++){
                 vector<cv::Point> points = contourFinder.getContour(i); //cambiar a i
-                ofLog(OF_LOG_NOTICE, ofToString(points.size()));
+                //                ofLog(OF_LOG_NOTICE, ofToString(points.size()));
                 for(int j=0; j<numPartPerContour; j++){
                     int ind = j*points.size()/numPartPerContour;
                     pss[i*numPartPerContour+j]->setEmitter(points[ind].x, points[ind].y);
                 }
             }
-//*****************************************************************************// CAMBIO
-
+            //*****************************************************************************// CAMBIO
+            
         }
         if(contourFinder.getContours().size()==0 || ofGetElapsedTimeMillis()-lastTimeMovHigh > 10000){
             genEstado(0);
@@ -232,7 +234,7 @@ void ofApp::genEstado(int est){
             pss[i]->updateLifedec(5);
         }
     }
-    //ofLog(OF_LOG_NOTICE, "ESTADO:" + ofToString(estado));
+    ofLog(OF_LOG_NOTICE, "ESTADO:" + ofToString(estado));
 }
 
 void ofApp::keyPressed(int key){
@@ -280,7 +282,7 @@ void ofApp::calcMovement(){
     diff.update();
     copy(myImage, previous);
     diffMean = mean(toCv(diff));
-//    diffMean *= Scalar(50);
+    //    diffMean *= Scalar(50);
     mov = diffMean[0];
 }
 //--------------------------------------------------------------
