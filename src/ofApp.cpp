@@ -7,6 +7,7 @@ int estado = 2;
 int lastEstado = 2;
 int timeChangeToZero = 0;
 int lastTimeChangeToZero = 0;
+int lastTimeMovHigh = 0;
 int lastTimeChange = 0;
 bool useKinect = true;
 int lastNumUsers = 0;
@@ -86,8 +87,11 @@ void ofApp::update(){
         myImage.update();
         
         calcMovement();
+        if(mov > 20){
+            lastTimeMovHigh = ofGetElapsedTimeMillis();
+        }
         int currentNumUsers = niUserGenerator.getNumberOfTrackedUsers();
-        ofLog(OF_LOG_NOTICE, "USERS: " + ofToString(currentNumUsers) + "   MOV: " + ofToString(diffMean));
+        ofLog(OF_LOG_NOTICE, "USERS: " + ofToString(currentNumUsers) + "   MOV: " + ofToString(mov));
 
         if(currentNumUsers != 0){
             contourFinder.findContours(myImage);
@@ -115,21 +119,24 @@ void ofApp::update(){
     else if(estado == 3){
         if(useKinect)contourFinder.findContours(myImage);
         else contourFinder.findContours(img);
-        if(contourFinder.getContours().size()>0){
+        int numContours = contourFinder.getContours().size();
+        if(numContours > 0){
+            int numPartPerContour = pss.size()/numContours;
 //*****************************************************************************// CAMBIO
-            for(int i=0; i<contourFinder.getContours().size();i++){
+            for(int i = 0; i < numContours; i++){
                 vector<cv::Point> points = contourFinder.getContour(i); //cambiar a i
-                for(int j=0; j<pss.size(); j+=3){
-                    int ind = j*points.size()/pss.size();
-                    pss[j]->setEmitter(points[ind].x, points[ind].y);
+                ofLog(OF_LOG_NOTICE, ofToString(points.size()));
+                for(int j=0; j<numPartPerContour; j++){
+                    int ind = j*points.size()/numPartPerContour;
+                    pss[i*numPartPerContour+j]->setEmitter(points[ind].x, points[ind].y);
                 }
             }
 //*****************************************************************************// CAMBIO
 
         }
         if(contourFinder.getContours().size()==0 /*|| mov < 20*/){
-            genEstado(1);
-            lastTimeChange = 0;
+            genEstado(0);
+            lastTimeChangeToZero = 0;
         }
     }
     for(int i=0; i<pss.size(); i++){
@@ -186,7 +193,7 @@ void ofApp::draw(){
     ofPopMatrix();
     ofPopStyle();
     
-    myImage.draw(320, 0, 320, 240);
+    myImage.draw(ofGetWindowWidth()-320, ofGetWindowHeight()-240, 320, 240);
     //    ofSetColor(0, 255, 255);
     //    ofSetColor(255);
     //    ofDrawBitmapString("FPS: " + ofToString( ofGetFrameRate()), ofGetWidth()-100, 15);
@@ -272,7 +279,7 @@ void ofApp::calcMovement(){
     diff.update();
     copy(myImage, previous);
     diffMean = mean(toCv(diff));
-    diffMean *= Scalar(50);
+//    diffMean *= Scalar(50);
     mov = diffMean[0];
 }
 //--------------------------------------------------------------
