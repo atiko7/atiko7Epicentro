@@ -9,7 +9,7 @@ int timeChangeToZero = 0;
 int lastTimeChangeToZero = 0;
 int lastTimeMovHigh = 0;
 int lastTimeChange = 0;
-bool useKinect = true;
+bool useKinect = false;
 int lastNumUsers = 0;
 
 //--------------------------------------------------------------
@@ -86,12 +86,8 @@ void ofApp::update(){
         myImage.setFromPixels(userpixels);
         myImage.update();
         
-        calcMovement();
-        if(mov > 20){
-            lastTimeMovHigh = ofGetElapsedTimeMillis();
-        }
+       
         int currentNumUsers = niUserGenerator.getNumberOfTrackedUsers();
-        ofLog(OF_LOG_NOTICE, "USERS: " + ofToString(currentNumUsers) + "   MOV: " + ofToString(mov));
 
         if(currentNumUsers != 0){
             contourFinder.findContours(myImage);
@@ -105,6 +101,11 @@ void ofApp::update(){
         }
     }
     checkTimes();
+    calcMovement();
+    ofLog(OF_LOG_NOTICE, "MOV: " + ofToString(mov));
+    if(mov > 20){
+        lastTimeMovHigh = ofGetElapsedTimeMillis();
+    }
     
     if(estado == 0){
         for(int i=0; i<pss.size(); i++){
@@ -134,7 +135,7 @@ void ofApp::update(){
 //*****************************************************************************// CAMBIO
 
         }
-        if(contourFinder.getContours().size()==0 /*|| mov < 20*/){
+        if(contourFinder.getContours().size()==0 || ofGetElapsedTimeMillis()-lastTimeMovHigh > 10000){
             genEstado(0);
             lastTimeChangeToZero = 0;
         }
@@ -202,7 +203,6 @@ void ofApp::draw(){
 }
 //--------------------------------------------------------------
 void ofApp::genEstado(int est){
-    
     if(est==0){
         estado = 0;
         for(int i=0; i<pss.size(); i++){
@@ -220,6 +220,7 @@ void ofApp::genEstado(int est){
         generateParticlesLogo(&pix2);
     }
     else if(est==3){
+        lastTimeMovHigh = ofGetElapsedTimeMillis();
         estado = 3;
         for(int i=0; i<pss.size(); i++){
             pss[i]->updateLifedec(20);
